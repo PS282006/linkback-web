@@ -2,28 +2,24 @@ import { createClient } from '@supabase/supabase-js';
 
 // 1. Setup Supabase Client
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// 2. Define the Props Type (Next.js 15 requires params to be a Promise)
-type Props = {
-  params: Promise<{ id: string }>;
-};
+// 2. Main Page Component (Async)
+export default async function FoundItemPage({ params }) {
+  // Await params to support both Next.js 14 and 15
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
-// 3. The Main Page Component
-export default async function FoundItemPage({ params }: Props) {
-  // AWAIT the params to get the ID (Crucial for Next.js 15)
-  const { id } = await params;
-
-  // 4. Fetch Data
+  // 3. Fetch Data
   const { data: item, error } = await supabase
     .from('items')
     .select('*')
     .eq('id', id)
     .single();
 
-  // 5. Handle "Not Found"
+  // 4. Handle "Not Found"
   if (error || !item) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
@@ -33,7 +29,7 @@ export default async function FoundItemPage({ params }: Props) {
     );
   }
 
-  // 6. Check Logic
+  // 5. Lost Mode Logic
   const isLost = item.is_lost;
 
   return (
