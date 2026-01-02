@@ -6,27 +6,34 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// 2. This is the main Server Component (Async by default now!)
-export default async function FoundItemPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+// 2. Define the Props Type (Next.js 15 requires params to be a Promise)
+type Props = {
+  params: Promise<{ id: string }>;
+};
 
-  // 3. Fetch Data directly inside the component
+// 3. The Main Page Component
+export default async function FoundItemPage({ params }: Props) {
+  // AWAIT the params to get the ID (Crucial for Next.js 15)
+  const { id } = await params;
+
+  // 4. Fetch Data
   const { data: item, error } = await supabase
     .from('items')
     .select('*')
     .eq('id', id)
     .single();
 
-  // 4. Handle "Not Found" or Error
+  // 5. Handle "Not Found"
   if (error || !item) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
         <h1 className="text-3xl font-bold text-red-500">404: Item Not Found</h1>
+        <p className="text-gray-500 mt-2">ID: {id}</p>
       </div>
     );
   }
 
-  // 5. Determine if Lost
+  // 6. Check Logic
   const isLost = item.is_lost;
 
   return (
