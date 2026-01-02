@@ -1,36 +1,33 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 1. Connect to Supabase
+// 1. Setup Supabase Client
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// 2. Fetch Data BEFORE the page loads (Server Side)
-export async function getServerSideProps(context) {
-  const { id } = context.params;
+// 2. This is the main Server Component (Async by default now!)
+export default async function FoundItemPage({ params }: { params: { id: string } }) {
+  const { id } = params;
 
+  // 3. Fetch Data directly inside the component
   const { data: item, error } = await supabase
     .from('items')
     .select('*')
     .eq('id', id)
     .single();
 
+  // 4. Handle "Not Found" or Error
   if (error || !item) {
-    return { notFound: true }; // This triggers a 404 if ID is wrong
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <h1 className="text-3xl font-bold text-red-500">404: Item Not Found</h1>
+      </div>
+    );
   }
 
-  return {
-    props: {
-      item, // Pass the item data to the page
-    },
-  };
-}
-
-// 3. The Page Design (Frontend)
-export default function FoundItem({ item }) {
-  // Check if the item is marked as LOST
-  const isLost = item?.is_lost;
+  // 5. Determine if Lost
+  const isLost = item.is_lost;
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-center p-6 ${
@@ -67,16 +64,16 @@ export default function FoundItem({ item }) {
           <p className="text-cyan-400 text-lg font-mono mt-1">{item.owner_email || "Hidden"}</p>
         </div>
   
-        <button
-          onClick={() => window.location.href = `mailto:${item.owner_email}?subject=Found Item: ${item.name}`}
-          className={`w-full py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 ${
+        <a
+          href={`mailto:${item.owner_email}?subject=Found Item: ${item.name}`}
+          className={`block w-full py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 ${
             isLost 
             ? "bg-red-600 hover:bg-red-500 text-white shadow-[0_0_20px_rgba(220,38,38,0.5)]" 
             : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_0_20px_rgba(6,182,212,0.5)]"
           }`}
         >
           {isLost ? "🚨 REPORT TO OWNER" : "📧 Contact Owner"}
-        </button>
+        </a>
   
         <p className="mt-8 text-gray-500 text-xs">Protected by LinkBack Systems</p>
       </div>
