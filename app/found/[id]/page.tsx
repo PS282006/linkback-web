@@ -49,49 +49,55 @@ export default function FoundItemPage() {
         <p className="text-slate-500 mt-2">This ID does not exist in our secure registry.</p>
     </div>
   );
-
+  const isLost = item?.is_lost;
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col items-center justify-center p-4 font-sans">
+  <div className={`min-h-screen flex flex-col items-center justify-center p-6 ${
+    isLost ? "bg-red-900" : "bg-gradient-to-br from-gray-900 via-purple-900 to-black"
+  }`}>
+    
+    <div className={`backdrop-blur-xl p-8 rounded-2xl shadow-2xl border max-w-md w-full text-center ${
+       isLost ? "bg-red-950/80 border-red-500" : "bg-white/10 border-white/20"
+    }`}>
       
-      {/* Glassmorphism Card */}
-      <div className="bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border border-white/50 relative overflow-hidden">
-        
-        {/* Top Decoration */}
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
-
-        {/* Verified Badge */}
-        <div className="flex justify-center mb-6">
-          <div className="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-2 shadow-sm">
-            <ShieldCheck size={16} />
-            SECURE REGISTERED ITEM
-          </div>
+      {/* Dynamic Header */}
+      {isLost ? (
+        <div className="animate-pulse mb-6">
+          <h1 className="text-4xl font-extrabold text-red-500 tracking-widest uppercase">⚠️ LOST ITEM ⚠️</h1>
+          <p className="text-red-200 mt-2">This item has been reported stolen or lost.</p>
         </div>
+      ) : (
+        <h1 className="text-3xl font-bold text-white mb-2">Item Found! 🎉</h1>
+      )}
 
-        {/* Item Name */}
-        <h1 className="text-4xl font-black text-slate-900 mb-2 tracking-tight">{item.name}</h1>
-        <p className="text-slate-500 mb-8 font-medium">ID: {id}</p>
+      {/* Image Display */}
+      {item.image_url && (
+        <img 
+          src={item.image_url} 
+          alt="Item" 
+          className={`w-full h-64 object-cover rounded-lg mb-6 border-2 ${isLost ? "border-red-500" : "border-white/20"}`}
+        />
+      )}
 
-        {/* Message to Finder */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 text-left">
-          <p className="text-blue-900 text-sm leading-relaxed">
-            <strong>👋 To the Finder:</strong><br/>
-            Thank you for scanning this.  Please help return it securely. Thank you for your honesty and cooperation!
-          </p>
-        </div>
-
-        {/* Action Button */}
-        <a 
-          href={`mailto:${item.owner_email}?subject=Found Item: ${item.name}&body=Hello, I found your ${item.name}. Let's arrange a return.`}
-          className="group block w-full bg-slate-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-all transform hover:scale-[1.02] shadow-xl flex items-center justify-center gap-3"
-        >
-          <Mail size={20} className="group-hover:animate-bounce" />
-          Contact Owner
-        </a>
-        
-        <p className="mt-8 text-xs text-slate-400 font-medium tracking-widest uppercase">
-          Powered by LinkBack Security
-        </p>
+      <h2 className="text-2xl font-semibold text-white mb-4">{item.name}</h2>
+      
+      <div className="bg-black/30 p-4 rounded-lg mb-6">
+        <p className="text-gray-400 text-sm uppercase tracking-wide">Owner Contact</p>
+        <p className="text-cyan-400 text-lg font-mono mt-1">{item.owner_email || "Hidden"}</p>
       </div>
+
+      <button
+        onClick={() => window.location.href = `mailto:${item.owner_email}?subject=Found Item: ${item.name}`}
+        className={`w-full py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 ${
+          isLost 
+          ? "bg-red-600 hover:bg-red-500 text-white shadow-[0_0_20px_rgba(220,38,38,0.5)]" 
+          : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_0_20px_rgba(6,182,212,0.5)]"
+        }`}
+      >
+        {isLost ? "🚨 REPORT TO OWNER" : "📧 Contact Owner"}
+      </button>
+
+      <p className="mt-8 text-gray-500 text-xs">Protected by LinkBack Systems</p>
     </div>
-  );
+  </div>
+);
 }
