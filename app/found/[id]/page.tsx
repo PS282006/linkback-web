@@ -75,7 +75,7 @@ export default function FoundItemPage() {
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 text-left">
           <p className="text-blue-900 text-sm leading-relaxed">
             <strong>👋 To the Finder:</strong><br/>
-            Thank you for scanning this. This item has been marked as <b>Active</b> by its owner. Please help return it securely.
+            Thank you for scanning this.  Please help return it securely. Thank you for your honesty and cooperation!
           </p>
         </div>
 
