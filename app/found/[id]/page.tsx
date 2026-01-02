@@ -55,10 +55,10 @@ export default function FoundItemPage() {
 
         {/* Action Button */}
         <a 
-          href={`mailto:your-email@gmail.com?subject=Found Item: ${item.name} (ID: ${id})`}
-          className="block w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition"
+          href={`mailto:${item.owner_email}?subject=Found Item: ${item.name}&body=Hello, I scanned the QR code on your ${item.name}. Please contact me to arrange a return.`}
+          className="block w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition shadow-lg"
         >
-          📧 Contact Owner Now
+          📧 Contact Owner
         </a>
       </div>
     </div>
